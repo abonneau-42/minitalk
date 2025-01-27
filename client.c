@@ -6,7 +6,7 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:55:59 by abonneau          #+#    #+#             */
-/*   Updated: 2025/01/27 19:14:23 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/01/27 20:02:33 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	send_bit(pid_t receiver_pid, int bit) {
     else
         kill(receiver_pid, SIGUSR2);
 
-    usleep(10000);
+    usleep(1000); // 1ms = 1bit/ms = 1000bits/s = 125B/s
 }
 
 int	ft_strlen(char *str)
