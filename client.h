@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.h                                           :+:      :+:    :+:   */
+/*   client.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/27 18:40:26 by abonneau          #+#    #+#             */
-/*   Updated: 2025/01/28 18:24:07 by abonneau         ###   ########.fr       */
+/*   Created: 2025/01/28 18:23:08 by abonneau          #+#    #+#             */
+/*   Updated: 2025/01/28 18:24:27 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,5 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
-
-typedef struct s_server_state {
-    int		bit_count;
-    char	*message;
-    int		current_byte;
-	size_t	message_size;
-    int     sender_pid;
-}	t_server_state;
 
 #endif
