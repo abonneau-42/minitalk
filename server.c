@@ -6,71 +6,81 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:19:46 by abonneau          #+#    #+#             */
-/*   Updated: 2025/01/28 18:25:59 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/01/28 20:21:51 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-t_server_state state = {.bit_count=0, .current_byte=0, .message_size=0, .sender_pid=0};
-
-void handle_signal(int signo, siginfo_t *info, void *context)
+void	add_bit_to_byte(int signo, t_server_state *state)
 {
-    (void)context;
-    if (state.sender_pid == 0) // On enregistre le PID de l'émetteur
-        state.sender_pid = info->si_pid;
-
-    if (signo == SIGUSR1)
-        state.current_byte = (state.current_byte << 1) | 1;
-    else if (signo == SIGUSR2)
-        state.current_byte = (state.current_byte << 1) | 0;
-    
-    state.bit_count++;
-
-    if (state.bit_count % 8 == 0) { // Un octet complet reçu
-        if (state.bit_count / 8 <= 4) { // Récupération de la taille du message
-            state.message_size = (state.message_size << 8) | state.current_byte;
-            if (state.bit_count / 8 == 4) {
-                state.message = malloc(state.message_size + 1);
-                if (!state.message)
-                    exit(EXIT_FAILURE);
-            }
-        } else { // Récupération du message
-            state.message[state.bit_count / 8 - 5] = (char)state.current_byte;
-            if (state.message[state.bit_count / 8 - 5] == '\0') {
-                write(1, state.message, state.message_size);
-                write(1, "\n", 1);
-				if (state.message) {
-					free(state.message);
-					state.message = NULL;
-				}
-				state.bit_count = 0;
-				state.current_byte = 0;
-				state.message_size = 0;
-            }
-        }
-        state.current_byte = 0;
-    }
-
-    // Envoyer un ACK au client
-    kill(state.sender_pid, SIGUSR1);
-
-	if (state.bit_count == 0) {
-    	state.sender_pid = 0;
-	}
+	if (signo == SIGUSR1)
+		state->current_byte = (state->current_byte << 1) | 1;
+	else if (signo == SIGUSR2)
+		state->current_byte = (state->current_byte << 1) | 0;
+	state->bit_count++;
 }
 
-int main() {
-    struct sigaction sa;
-    sa.sa_sigaction = handle_signal;
-    sa.sa_flags = SA_SIGINFO;
-    sigemptyset(&sa.sa_mask);
+void	print_message(t_server_state *state)
+{
+	write(1, state->message, state->message_size);
+	write(1, "\n", 1);
+	free(state->message);
+	state->is_init = FALSE;
+}
 
-    printf("Serveur PID: %d\n", getpid());
+void	read_byte_message_size(int signo, t_server_state *state)
+{
+	state->message_size = (state->message_size << 8) | state->current_byte;
+	if (state->bit_count / 8 == 4)
+	{
+		state->message = malloc(state->message_size + 1);
+		if (!state->message)
+			exit(EXIT_FAILURE);
+	}
+	state->current_byte = 0;
+}
 
-    sigaction(SIGUSR1, &sa, NULL);
-    sigaction(SIGUSR2, &sa, NULL);
+void	handle_signal(int signo, siginfo_t *info, void *context)
+{
+	static t_server_state	state = {.is_init = FALSE};
 
-    while (1) pause();
-    return 0;
+	if (!state.is_init)
+		state = (t_server_state){.is_init = TRUE, .bit_count = 0,
+			.sender_pid = 0, .current_byte = 0,
+			.message = NULL, .message_size = 0};
+	(void)context;
+	if (state.sender_pid == 0)
+		state.sender_pid = info->si_pid;
+	add_bit_to_byte(signo, &state);
+	if (state.bit_count % 8 == 0)
+	{
+		if (state.bit_count / 8 <= 4)
+			read_byte_message_size(signo, &state);
+		else
+		{
+			state.message[state.bit_count / 8 - 5] = (char)state.current_byte;
+			if (state.message[state.bit_count / 8 - 5] == '\0')
+				print_message(&state);
+		}
+		state.current_byte = 0;
+	}
+	kill(state.sender_pid, SIGUSR1);
+}
+
+int	main(int argc, char **argv)
+{
+	struct sigaction	sa;
+
+	(void)argc;
+	(void)argv;
+	sa.sa_sigaction = handle_signal;
+	sa.sa_flags = SA_SIGINFO;
+	sigemptyset(&sa.sa_mask);
+	printf("Serveur PID: %d\n", getpid());
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+	while (1)
+		pause();
+	return (0);
 }
