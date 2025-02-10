@@ -6,7 +6,7 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:55:59 by abonneau          #+#    #+#             */
-/*   Updated: 2025/01/28 19:31:51 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/10 19:46:50 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,26 @@ void	ack_handler(int signo)
 
 void	send_bit(pid_t receiver_pid, int bit)
 {
+	unsigned int timeout = 1000;
+    unsigned int elapsed = 0;
+	
 	if (bit)
 		kill(receiver_pid, SIGUSR1);
 	else
 		kill(receiver_pid, SIGUSR2);
 	while (!g_ack_received)
-		;
+	{
+		if (elapsed < timeout)
+		{
+			usleep(1000);
+			elapsed++;
+		}
+		else
+		{
+			printf("The PID %d does not respond.", receiver_pid);
+			exit(0);
+		}
+	}
 	g_ack_received = 0;
 }
 
@@ -79,7 +93,8 @@ int	main(int argc, char *argv[])
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sigaction(SIGUSR1, &sa, NULL);
-	printf("Envoi du message au PID %d...\n", receiver_pid);
+	printf("Sending message to PID %d in progress...\n", receiver_pid);
 	send_message(receiver_pid, message);
+	printf("The PID %d has received the message.\n", receiver_pid);
 	return (0);
 }

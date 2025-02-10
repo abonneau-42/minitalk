@@ -6,7 +6,7 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:19:46 by abonneau          #+#    #+#             */
-/*   Updated: 2025/01/28 20:21:51 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/10 19:52:07 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	print_message(t_server_state *state)
 	state->is_init = FALSE;
 }
 
-void	read_byte_message_size(int signo, t_server_state *state)
+void	read_byte_message_size(t_server_state *state)
 {
 	state->message_size = (state->message_size << 8) | state->current_byte;
 	if (state->bit_count / 8 == 4)
@@ -56,7 +56,7 @@ void	handle_signal(int signo, siginfo_t *info, void *context)
 	if (state.bit_count % 8 == 0)
 	{
 		if (state.bit_count / 8 <= 4)
-			read_byte_message_size(signo, &state);
+			read_byte_message_size(&state);
 		else
 		{
 			state.message[state.bit_count / 8 - 5] = (char)state.current_byte;
