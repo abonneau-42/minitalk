@@ -1,37 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.h                                           :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/28 18:23:08 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/11 12:31:59 by abonneau         ###   ########.fr       */
+/*   Created: 2025/02/11 10:39:30 by abonneau          #+#    #+#             */
+/*   Updated: 2025/02/11 10:54:56 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_H
-# define CLIENT_H
+#include <unistd.h>
 
-# include <stdlib.h>
-# include <signal.h>
-# include <sys/types.h>
-# include <unistd.h>
-
-typedef enum e_bool
+void	ft_putchar(char c)
 {
-	FALSE = 0,
-	TRUE = 1
-}	t_bool;
+	write(STDOUT_FILENO, &c, 1);
+}
 
-typedef enum e_client_response
+void	ft_putnbr(unsigned int n)
 {
-	COM_ESTABLISHED = 0,
-	COM_LOST = 1,
-}	t_client_response;
-
-void	ft_putchar(char c);
-void	ft_putnbr(unsigned int n);
-void	client_message(t_client_response message_type, pid_t receiver_pid);
-
-#endif
+	if (n >= 10)
+	{
+		ft_putnbr(n / 10);
+		ft_putchar(n % 10 + '0');
+	}
+	else
+		ft_putchar(n + '0');
+}

@@ -12,9 +12,13 @@ INCLUDES_FILES_SERVER = $(addprefix $(INCLUDES_DIR)/, $(HEADER_SERVER))
 
 SRCS_DIR = srcs
 
-SRCS_FILES_CLIENT = 	client.c \
+SRCS_FILES_CLIENT = 	client/client.c \
+						client/client_message.c \
+						utils.c \
 
-SRCS_FILES_SERVER = 	server.c \
+SRCS_FILES_SERVER = 	server/server.c \
+						server/server_message.c \
+						utils.c \
 
 SRCS_CLIENT = $(addprefix $(SRCS_DIR)/, $(SRCS_FILES_CLIENT))
 SRCS_SERVER = $(addprefix $(SRCS_DIR)/, $(SRCS_FILES_SERVER))
@@ -23,9 +27,6 @@ OBJS_CLIENT = $(patsubst $(SRCS_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS_CLIENT))
 OBJS_SERVER = $(patsubst $(SRCS_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS_SERVER))
 
 all: $(NAME_SERVER) $(NAME_CLIENT)
-
-gcl:
-	git clone git@github.com:abonneau-42/ft_printf.git
 
 $(NAME_CLIENT): $(OBJS_CLIENT)
 	$(CC) $(CFLAGS) $(OBJS_CLIENT) -o $(NAME_CLIENT)

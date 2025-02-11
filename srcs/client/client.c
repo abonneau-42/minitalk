@@ -6,7 +6,7 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:55:59 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/10 19:46:50 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/11 12:35:13 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,27 +22,30 @@ void	ack_handler(int signo)
 
 void	send_bit(pid_t receiver_pid, int bit)
 {
-	unsigned int timeout = 1000;
-    unsigned int elapsed = 0;
-	
+	static t_bool	in_progress = FALSE;
+	unsigned int	elapsed;
+
+	elapsed = 0;
 	if (bit)
 		kill(receiver_pid, SIGUSR1);
 	else
 		kill(receiver_pid, SIGUSR2);
 	while (!g_ack_received)
 	{
-		if (elapsed < timeout)
-		{
+		if (elapsed++ < 1000)
 			usleep(1000);
-			elapsed++;
-		}
 		else
 		{
-			printf("The PID %d does not respond.", receiver_pid);
-			exit(0);
+			client_message(COM_LOST, receiver_pid);
+			exit(1);
 		}
 	}
 	g_ack_received = 0;
+	if (!in_progress)
+	{
+		client_message(COM_ESTABLISHED, receiver_pid);
+		in_progress = TRUE;
+	}
 }
 
 int	ft_strlen(char *str)
@@ -84,7 +87,7 @@ int	main(int argc, char *argv[])
 
 	if (argc < 3)
 	{
-		printf("Utilisation : %s <PID_du_serveur> <message>\n", argv[0]);
+		write(STDOUT_FILENO, "Usage: ./client [PID] [message]\n", 32);
 		return (1);
 	}
 	receiver_pid = atoi(argv[1]);
@@ -93,8 +96,7 @@ int	main(int argc, char *argv[])
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sigaction(SIGUSR1, &sa, NULL);
-	printf("Sending message to PID %d in progress...\n", receiver_pid);
 	send_message(receiver_pid, message);
-	printf("The PID %d has received the message.\n", receiver_pid);
+	write(STDOUT_FILENO, "Message sent successfully.\n", 27);
 	return (0);
 }

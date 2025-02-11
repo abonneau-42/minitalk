@@ -1,37 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.h                                           :+:      :+:    :+:   */
+/*   server_message.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/28 18:23:08 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/11 12:31:59 by abonneau         ###   ########.fr       */
+/*   Created: 2025/02/11 10:42:52 by abonneau          #+#    #+#             */
+/*   Updated: 2025/02/11 12:12:24 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_H
-# define CLIENT_H
+#include "server.h"
 
-# include <stdlib.h>
-# include <signal.h>
-# include <sys/types.h>
-# include <unistd.h>
-
-typedef enum e_bool
+void	server_message(t_server_response message_type, pid_t receiver_pid)
 {
-	FALSE = 0,
-	TRUE = 1
-}	t_bool;
-
-typedef enum e_client_response
-{
-	COM_ESTABLISHED = 0,
-	COM_LOST = 1,
-}	t_client_response;
-
-void	ft_putchar(char c);
-void	ft_putnbr(unsigned int n);
-void	client_message(t_client_response message_type, pid_t receiver_pid);
-
-#endif
+	if (message_type == PRINT_PID)
+	{
+		write(STDOUT_FILENO, "The server has started up with the PID ", 39);
+		ft_putnbr(receiver_pid);
+		write(STDOUT_FILENO, ".\n", 2);
+	}
+}
