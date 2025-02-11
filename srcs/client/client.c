@@ -6,7 +6,7 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:55:59 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/11 12:35:13 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:02:19 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,6 @@ void	send_message(pid_t receiver_pid, const char *message)
 int	main(int argc, char *argv[])
 {
 	pid_t				receiver_pid;
-	char				*message;
-	struct sigaction	sa;
 
 	if (argc < 3)
 	{
@@ -91,12 +89,8 @@ int	main(int argc, char *argv[])
 		return (1);
 	}
 	receiver_pid = atoi(argv[1]);
-	message = argv[2];
-	sa.sa_handler = ack_handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	sigaction(SIGUSR1, &sa, NULL);
-	send_message(receiver_pid, message);
+	signal(SIGUSR1, ack_handler);
+	send_message(receiver_pid, argv[2]);
 	write(STDOUT_FILENO, "Message sent successfully.\n", 27);
 	return (0);
 }
