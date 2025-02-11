@@ -6,7 +6,7 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:19:46 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/11 14:43:57 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:14:12 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,11 @@ void	handle_signal(int signo, siginfo_t *info, void *context)
 
 	if (!state.is_init)
 		state = (t_server_state){.is_init = TRUE, .bit_count = 0,
-			.sender_pid = 0, .current_byte = 0,
+			.sender_pid = info->si_pid, .current_byte = 0,
 			.message = NULL, .message_size = 0};
 	(void)context;
-	if (state.sender_pid == 0)
-		state.sender_pid = info->si_pid;
+	if (info->si_pid != state.sender_pid)
+		return ;
 	add_bit_to_byte(signo, &state);
 	if (state.bit_count % 8 == 0)
 	{
