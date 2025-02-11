@@ -6,7 +6,7 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:55:59 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/11 16:02:19 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/11 19:10:43 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	send_bit(pid_t receiver_pid, int bit)
 	while (!g_ack_received)
 	{
 		if (elapsed++ < 1000)
-			usleep(1000);
+			usleep(100);
 		else
 		{
 			client_message(COM_LOST, receiver_pid);
@@ -81,12 +81,23 @@ void	send_message(pid_t receiver_pid, const char *message)
 
 int	main(int argc, char *argv[])
 {
-	pid_t				receiver_pid;
+	pid_t			receiver_pid;
+	unsigned int	i;
 
-	if (argc < 3)
+	if (argc < 3 || !*argv[1])
 	{
 		write(STDOUT_FILENO, "Usage: ./client [PID] [message]\n", 32);
 		return (1);
+	}
+	i = 0;
+	while (argv[1][i])
+	{
+		if (!(argv[1][i] >= '0' && argv[1][i] <= '9'))
+		{
+			write(STDOUT_FILENO, "PID is not an integer.\n", 23);
+			return (1);
+		}
+		receiver_pid = receiver_pid * 10 + argv[1][i++] - '0';
 	}
 	receiver_pid = atoi(argv[1]);
 	signal(SIGUSR1, ack_handler);
