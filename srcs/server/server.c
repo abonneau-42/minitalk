@@ -6,22 +6,22 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:19:46 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/11 16:14:12 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/12 14:30:35 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-void	add_bit_to_byte(int signo, t_server_state *state)
+static void	add_bit_to_byte(int signo, t_server_state *state)
 {
 	if (signo == SIGUSR1)
 		state->current_byte = (state->current_byte << 1) | 1;
 	else if (signo == SIGUSR2)
-		state->current_byte = (state->current_byte << 1) | 0;
+		state->current_byte = (state->current_byte << 1);
 	state->bit_count++;
 }
 
-void	print_message(t_server_state *state)
+static void	print_message(t_server_state *state)
 {
 	write(1, state->message, state->message_size);
 	write(1, "\n", 1);
@@ -29,7 +29,7 @@ void	print_message(t_server_state *state)
 	state->is_init = FALSE;
 }
 
-void	read_byte_message_size(t_server_state *state)
+static void	read_byte_message_size(t_server_state *state)
 {
 	state->message_size = (state->message_size << 8) | state->current_byte;
 	if (state->bit_count / 8 == 4)
@@ -41,7 +41,7 @@ void	read_byte_message_size(t_server_state *state)
 	state->current_byte = 0;
 }
 
-void	handle_signal(int signo, siginfo_t *info, void *context)
+static void	handle_signal(int signo, siginfo_t *info, void *context)
 {
 	static t_server_state	state = {.is_init = FALSE};
 
@@ -68,12 +68,10 @@ void	handle_signal(int signo, siginfo_t *info, void *context)
 	kill(state.sender_pid, SIGUSR1);
 }
 
-int	main(int argc, char **argv)
+int	main(void)
 {
 	struct sigaction	sa;
 
-	(void)argc;
-	(void)argv;
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handle_signal;
 	sigemptyset(&sa.sa_mask);
