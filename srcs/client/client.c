@@ -12,7 +12,7 @@
 
 #include "client.h"
 
-volatile sig_atomic_t	g_ack_received = 0;
+static t_bool	g_ack_received = 0;
 
 void	ack_handler(int signo)
 {
