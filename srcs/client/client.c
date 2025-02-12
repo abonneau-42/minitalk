@@ -6,11 +6,11 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:55:59 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/12 14:23:50 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/12 14:46:25 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "client.h"
+#include "minitalk.h"
 
 static t_bool	g_server_response = FALSE;
 

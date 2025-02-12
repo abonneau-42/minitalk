@@ -6,11 +6,11 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 09:41:28 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/11 12:34:34 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/12 14:46:28 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "client.h"
+#include "minitalk.h"
 
 void	client_message(t_client_response message_type, pid_t receiver_pid)
 {

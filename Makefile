@@ -3,12 +3,10 @@ NAME_CLIENT = client
 NAME_SERVER = server
 BUILD_DIR = .build
 INCLUDES_DIR = ./includes
-HEADER_CLIENT = client.h
-HEADER_SERVER = server.h
+HEADER = minitalk.h
 
 CFLAGS = -Wall -Werror -Wextra -I $(INCLUDES_DIR)
-INCLUDES_FILES_CLIENT = $(addprefix $(INCLUDES_DIR)/, $(HEADER_CLIENT))
-INCLUDES_FILES_SERVER = $(addprefix $(INCLUDES_DIR)/, $(HEADER_SERVER))
+INCLUDES_FILES = $(addprefix $(INCLUDES_DIR)/, $(HEADER))
 
 SRCS_DIR = srcs
 
@@ -34,7 +32,7 @@ $(NAME_CLIENT): $(OBJS_CLIENT)
 $(NAME_SERVER): $(OBJS_SERVER)
 	$(CC) $(CFLAGS) $(OBJS_SERVER) -o $(NAME_SERVER)
 
-$(BUILD_DIR)/%.o: $(SRCS_DIR)/%.c $(INCLUDES_FILES_CLIENT) $(INCLUDES_FILES_SERVER) Makefile
+$(BUILD_DIR)/%.o: $(SRCS_DIR)/%.c $(INCLUDES_FILES) Makefile
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 

@@ -6,11 +6,11 @@
 /*   By: abonneau <abonneau@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:19:46 by abonneau          #+#    #+#             */
-/*   Updated: 2025/02/12 14:30:35 by abonneau         ###   ########.fr       */
+/*   Updated: 2025/02/12 14:52:50 by abonneau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.h"
+#include "minitalk.h"
 
 static void	add_bit_to_byte(int signo, t_server_state *state)
 {
@@ -75,7 +75,7 @@ int	main(void)
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handle_signal;
 	sigemptyset(&sa.sa_mask);
-	server_message(PRINT_PID, getpid());
+	server_message_init(getpid());
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
